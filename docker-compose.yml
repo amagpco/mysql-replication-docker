@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+  master:
+    image: mysql:5.7
+    container_name: mysql-master
+    command:
+      [
+        "mysqld",
+        "--server-id=1",
+        "--log-bin=mysql-bin"
+      ]
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data/master:/var/lib/mysql
+
+  slave:
+    image: mysql:5.7
+    container_name: mysql-slave
+    command:
+      [
+        "mysqld",
+        "--bind-address=0.0.0.0",
+        "--server-id=2",
+        "--log-bin=mysql-bin",
+        "--relay-log=slave-relay-bin",
+        "--replicate-same-server-id=ON",
+        "--log-bin-trust-function-creators=1"
+      ]
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3307:3307"
+    volumes:
+      - ./data/slave:/var/lib/mysql
+      
